@@ -6,9 +6,9 @@ namespace ProjectWebApi.Service.FuncionarioService
     {
         Task<ServiceResponse<List<FuncionarioModel>>> GetFuncionarios();
 
-        Task<ServiceResponse<List<FuncionarioModel>>> CreateFuncionarios(FuncionarioModel novoFuncionario);
+        Task<ServiceResponse<List<FuncionarioModel>>> CreateFuncionario(FuncionarioModel novoFuncionario);
 
-        Task<ServiceResponse<FuncionarioModel>> GetFuncionarioById();
+        Task<ServiceResponse<FuncionarioModel>> GetFuncionarioById(int id);
 
         Task<ServiceResponse<List<FuncionarioModel>>> UpdateFuncionarios(FuncionarioModel editadoFuncionario);
 

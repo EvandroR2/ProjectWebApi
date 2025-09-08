@@ -27,7 +27,31 @@ namespace ProjectWebApi.Service.FuncionarioService
 
             return serviceResponse;
         }
-        public async Task<ServiceResponse<List<FuncionarioModel>>> CreateFuncionarios(FuncionarioModel novoFuncionario)
+        public async Task<ServiceResponse<FuncionarioModel>> GetFuncionarioById(int id)
+        {
+            ServiceResponse<FuncionarioModel> serviceResponse = new ServiceResponse<FuncionarioModel>();
+            try
+            {
+                FuncionarioModel funcionario = _context.Funcionarios.FirstOrDefault(x => x.Id == id);
+                if (funcionario == null)
+                {
+                    serviceResponse.Dados = null;
+                    serviceResponse.Mensagem = "Funcionário não encontrado.";
+                    serviceResponse.Sucesso = false;
+                }
+
+                serviceResponse.Dados = funcionario;
+            }
+            catch (Exception ex)
+            {
+
+                serviceResponse.Mensagem = ex.Message;
+                serviceResponse.Sucesso = false;
+            }
+
+            return serviceResponse;
+        }
+        public async Task<ServiceResponse<List<FuncionarioModel>>> CreateFuncionario(FuncionarioModel novoFuncionario)
         {
             ServiceResponse<List<FuncionarioModel>> serviceResponse = new ServiceResponse<List<FuncionarioModel>>();
             try
@@ -56,24 +80,74 @@ namespace ProjectWebApi.Service.FuncionarioService
 
         }
 
-        public Task<ServiceResponse<List<FuncionarioModel>>> DeleteFuncionarios(int id)
+        public async Task<ServiceResponse<List<FuncionarioModel>>> DeleteFuncionarios(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ServiceResponse<FuncionarioModel>> GetFuncionarioById()
+        
+
+        public async Task<ServiceResponse<List<FuncionarioModel>>> InativaFuncionarios(int id)
         {
-            throw new NotImplementedException();
+            ServiceResponse<List<FuncionarioModel>> serviceResponse = new ServiceResponse<List<FuncionarioModel>>();
+            try
+            {
+                FuncionarioModel funcionario = _context.Funcionarios.FirstOrDefault(x => x.Id == id);
+                if (funcionario == null)
+                {
+                    serviceResponse.Dados = null;
+                    serviceResponse.Mensagem = "Funcionário não encontrado.";
+                    serviceResponse.Sucesso = false;
+                }
+
+                funcionario.Ativo = false;
+                funcionario.DataDeAlteracao = DateTime.Now.ToLocalTime();
+
+                _context.Funcionarios.Update(funcionario);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Dados = _context.Funcionarios.ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+                serviceResponse.Mensagem = ex.Message;
+                serviceResponse.Sucesso = false;
+            }
+
+            return serviceResponse;
         }
 
-        public Task<ServiceResponse<List<FuncionarioModel>>> InativaFuncionarios(int id)
+        public async Task<ServiceResponse<List<FuncionarioModel>>> UpdateFuncionarios(FuncionarioModel editadoFuncionario)
         {
-            throw new NotImplementedException();
-        }
+            ServiceResponse<List<FuncionarioModel>> serviceResponse = new ServiceResponse<List<FuncionarioModel>>();
+            try
+            {
+                FuncionarioModel funcionario = _context.Funcionarios.FirstOrDefault(x => x.Id == editadoFuncionario.Id);
+                if (funcionario == null)
+                {
+                    serviceResponse.Dados = null;
+                    serviceResponse.Mensagem = "Funcionário não encontrado.";
+                    serviceResponse.Sucesso = false;
+                }
 
-        public Task<ServiceResponse<List<FuncionarioModel>>> UpdateFuncionarios(FuncionarioModel editadoFuncionario)
-        {
-            throw new NotImplementedException();
+                funcionario.DataDeAlteracao = DateTime.Now.ToLocalTime();
+
+                _context.Funcionarios.Update(editadoFuncionario);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Dados = _context.Funcionarios.ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+                serviceResponse.Mensagem = ex.Message;
+                serviceResponse.Sucesso = false;
+            }
+
+            return serviceResponse;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ProjectWebApi.DataContext;
+﻿using Microsoft.EntityFrameworkCore;
+using ProjectWebApi.DataContext;
 using ProjectWebApi.Models;
 
 namespace ProjectWebApi.Service.FuncionarioService
@@ -82,10 +83,33 @@ namespace ProjectWebApi.Service.FuncionarioService
 
         public async Task<ServiceResponse<List<FuncionarioModel>>> DeleteFuncionarios(int id)
         {
-            throw new NotImplementedException();
-        }
+            ServiceResponse<List<FuncionarioModel>> serviceResponse = new ServiceResponse<List<FuncionarioModel>>();
+            try
+            {
+                FuncionarioModel funcionario = _context.Funcionarios.FirstOrDefault(x => x.Id == id);
+                if (funcionario == null)
+                {
+                    serviceResponse.Dados = null;
+                    serviceResponse.Mensagem = "Funcionário não encontrado.";
+                    serviceResponse.Sucesso = false;
+                }
 
-        
+
+                _context.Funcionarios.Remove(funcionario);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Dados = _context.Funcionarios.ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+                serviceResponse.Mensagem = ex.Message;
+                serviceResponse.Sucesso = false;
+            }
+
+            return serviceResponse;
+        }
 
         public async Task<ServiceResponse<List<FuncionarioModel>>> InativaFuncionarios(int id)
         {
@@ -124,7 +148,7 @@ namespace ProjectWebApi.Service.FuncionarioService
             ServiceResponse<List<FuncionarioModel>> serviceResponse = new ServiceResponse<List<FuncionarioModel>>();
             try
             {
-                FuncionarioModel funcionario = _context.Funcionarios.FirstOrDefault(x => x.Id == editadoFuncionario.Id);
+                FuncionarioModel funcionario = _context.Funcionarios.AsNoTracking().FirstOrDefault(x => x.Id == editadoFuncionario.Id);
                 if (funcionario == null)
                 {
                     serviceResponse.Dados = null;
@@ -149,5 +173,6 @@ namespace ProjectWebApi.Service.FuncionarioService
 
             return serviceResponse;
         }
+        
     }
 }
